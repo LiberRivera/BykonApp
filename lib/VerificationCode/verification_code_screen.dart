@@ -5,28 +5,24 @@ import '../ChangeCreateNewPassword/create_new_password_screen.dart';
 import '../Common/commonFunctions.dart';
 import 'package:mi_app/ResetPassword/send_reset_code_service.dart';
 
-
 // Importa la pantalla ChangePassword
 
 class SetCodeVerificationScreen extends StatefulWidget {
   final String email;
   final String token;
-  final String user_code;
-  const SetCodeVerificationScreen({super.key, required this.email, required this.token,required this.user_code});
+  final String userCode;
+  const SetCodeVerificationScreen({super.key, required this.email, required this.token,required this.userCode});
 
   @override
   // ignore: no_logic_in_create_state
-  State<SetCodeVerificationScreen> createState() => _SetCodeVerificationScreen(email: email, token:token, user_code: user_code );
+  State<SetCodeVerificationScreen> createState() => _SetCodeVerificationScreenState();
 }
 
-class _SetCodeVerificationScreen extends State<SetCodeVerificationScreen> {
-    //'email' se pasa como argumento al widget
-  final String email;
-  final String token;                            
-  String user_code;
+class _SetCodeVerificationScreenState extends State<SetCodeVerificationScreen> {
 
   String obfuscatedEmail =''; // Inicializar con un valor por defecto
-  String user_code_screen = ''; // Variable para almacenar los seis valores
+  String userCodeScreen = ''; // Variable para almacenar los seis valores ofuscados con puntos
+  List<String> userCodeScreenNoObfuscated = List.filled(6, ''); // Lista para almacenar los seis valores no ofuscados
 
   int _remainingTime = 900; // Tiempo en segundos
   late Timer _timer;
@@ -36,20 +32,10 @@ class _SetCodeVerificationScreen extends State<SetCodeVerificationScreen> {
   final List<TextEditingController> _controllers =
       List.generate(6, (_) => TextEditingController());
 
-  void _nextField(int index, String value) {
-    if (value.length == 1 && index < _focusNodes.length - 1) {
-      FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-    }
-  }
-  _SetCodeVerificationScreen({required this.email, required this.token, required this.user_code}); // Constructor para recibir el email
-
-
-   //final TextEditingController _emailController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    obfuscatedEmail = CommonFunctions.obfuscateEmail(email);
+    obfuscatedEmail = CommonFunctions.obfuscateEmail(widget.email);
     startTimer();
   }
 
@@ -86,10 +72,7 @@ class _SetCodeVerificationScreen extends State<SetCodeVerificationScreen> {
     super.dispose();
   }
 
-  void _onFieldChange() {
-    // Cada vez que cambian los campos, se reconstruye la UI
-    setState(() {});
-  }
+  //void _onFieldChange() {setState(() {});}// Cada vez que cambian los campos, se reconstruye la UI
   
 
 
@@ -211,144 +194,160 @@ return Scaffold(
                               ),
 
 //--------------------textFields 6 digits----------------
-                            Center(
-                              child: Padding(
-                                  padding: EdgeInsets.only(bottom: 24.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: List.generate(
-                                      6,
-                                      (index) => SizedBox(
-                                        width: 60,
-                                        height: 72,
-                                        child: TextFormField(
-                                          controller: _controllers[index],
-                                          focusNode: _focusNodes[index],
-                                          textAlign: TextAlign.center,
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [
-                                            LengthLimitingTextInputFormatter(1),
-                                            FilteringTextInputFormatter.digitsOnly,
-                                          TextInputFormatter.withFunction((oldValue, newValue) {
-                                            if (newValue.text.isNotEmpty) {
-                                              Future.delayed(const Duration(milliseconds: 500), () {
-                                                _controllers[index].text = '•';
-                                                _controllers[index].selection = TextSelection.collapsed(offset: 1);
-                                              });
-                                              return newValue;
-                                            }
-                                            return newValue;
-                                          }),
-                                          ],
-                                          style: const TextStyle(color: Colors.white, fontSize: 20),
-                                          decoration: InputDecoration(
-                                            filled: true,
-                                            fillColor: const Color(0xFF331D4F), // Darker purple input background
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                              borderSide: BorderSide(
-                                                color: _focusNodes[index].hasFocus ? Colors.white : Colors.transparent, // Highlight the focused field
-                                                width: 2.0,
-                                                ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder( // Add this for when the field is not focused
-                                              borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide(
-                                                  color: _focusNodes[index].hasFocus ? Colors.white : Colors.transparent, // Highlight the focused field
-                                                  width: 2.0,
-                                                ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder( // Add this for when the field is focused
-                                              borderRadius: BorderRadius.circular(8),
-                                              borderSide: BorderSide(
-                                                color: _focusNodes[index].hasFocus ? Colors.white : Colors.transparent, // Highlight the focused field
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                          ),
-                                          onChanged: (value) {
-                                            _nextField(index, value);
-                                            if (value.isEmpty && index > 0) {
-                                              FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
-                                            }
-                                          // Actualizar user_code_screen
-                                            setState(() {
-                                              user_code_screen = _controllers.map((controller) => controller.text).join('.');
-                                            });
-                                          },
-                                          onTap: () {
-                                            setState(() {
-                                              // Actualizar el estado para resaltar el campo enfocado
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+            const SizedBox(height: 28),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(
+                6,
+                (index) => SizedBox(
+                  width: 60,
+                  height: 80,
+                  child: TextField(
+                    controller: _controllers[index], // Controlador para manejar el texto
+                    focusNode: _focusNodes[index], // Nodo de foco para manejar el foco
+                    textAlign: TextAlign.center, // Centrar el texto
+                    keyboardType: TextInputType.number, // Solo números
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1), // Limitar a un carácter
+                      FilteringTextInputFormatter.digitsOnly, // Solo dígitos
+                      TextInputFormatter.withFunction((oldValue, newValue) {
+                        if (newValue.text.isNotEmpty) {
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                                  _controllers[index].text = '•';
+                                  _controllers[index].selection = TextSelection.collapsed(offset: 1);                                  
+                          });
+                          return newValue;
+                        }
+                        return newValue;
+                     }),
+                    ],
+                    style: const TextStyle(color: Colors.white, fontSize: 24), // Estilo del texto
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor:// Colors.grey[800], //fillColor: Colors.grey[800], // Fondo gris oscuro
+                            _focusNodes[index].hasFocus && index < _focusNodes.length - 1 ? Colors.white : Colors.grey[800],
+                         
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: _focusNodes[index].hasFocus ? Colors.white : Colors.transparent, // Resaltar el borde si está enfocado
+                          width: 2.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.transparent), // Borde transparente cuando no está enfocado
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.white, width: 2.0), // Borde blanco cuando está enfocado
+                      ),
+                    ),
+                    onChanged: (value) {
+                      // Mover al siguiente campo si se ingresa un carácter
+                      if (value.length == 1 && index < _focusNodes.length - 1) {
+                        FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+                      }
+                      // Actualizar el valor en la lista
+                      setState(() {
+                        userCodeScreen = _controllers.map((controller) => controller.text).join('.');
+                        userCodeScreenNoObfuscated[index] = value;
+                         
+                        //_hasValue[index] = value.isNotEmpty;
+                      });
+                    },
+                    onTap: () {
+                      setState(() {
+                        // Actualizar el estado para resaltar el campo enfocado
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
 //-------------------------------------------------------                             
                               // Timer: 'Tu código de seguridad vence en: 00:45'
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: 24.0),
-                                  child: Text(
-                                    'Tu código de seguridad vence en: ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 24.0),
+                child: Text(
+                  'Tu código de seguridad vence en: ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+            ],
+          ),
+        ),
+      ),
                       // 2) Botón “Continuar” , dentro del contenedor negro
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: currentButtonColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              padding: const EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 24.0,right: 24.0, bottom: 24.0),
+            //padding: const EdgeInsets.all(24.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: currentButtonColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                ),
+                // El botón siempre tiene onPressed,
+                // pero si no están los campos llenos => SnackBar
+//--------------k en boton continuar----------------                            
+                onPressed: () async {
+                 String userCodeAsString = userCodeScreenNoObfuscated.join();
+                  //print(' LOG_D no_obfuscated User Code: $userCodeAsString  user_code: ${widget.userCode} ');
+                      if (CommonFunctions.isValidUserCode(userCodeAsString) && userCodeAsString == widget.userCode && _remainingTime > 3){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => 
+                           // CreateNewPasswordScreen(token: token, userCode: user_code)),
+                           ChangePasswordScreen(token: widget.token,userCode: widget.userCode)),
+                          );
+                    } //else codigo incorrecto
+                else {
+                    // Mostrar SnackBar: código incorrecto
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: const [
+                            Icon(Icons.warning, color: Color.fromARGB(255, 255, 219, 166)),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text('Código incorrecto'),
                             ),
-                            // El botón siempre tiene onPressed,
-                            // pero si no están los campos llenos => SnackBar
-//----------------Click en boton continuar----------------                            
-                            onPressed: () async {
-//                            if (CommonFunctions.isValidUserCode(user_code_screen) && user_code_screen == user_code && _remainingTime > 0)
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => 
-                                  CreateNewPasswordScreen(token: token, user_code: user_code)),
-                                );
-                            },
-//--------------------------------------------------------------------------       
-                            child: Text(
-                              'Continuar',
-                              style: TextStyle(
-                                color: currentButtonTextColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
                       ),
+                    );
+                  }
+                },
+//--------------------------------------------------------------------       
+                child: Text(
+                  'Continuar',
+                  style: TextStyle(
+                    color: currentButtonTextColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
 
                   // 3) Botón “Reenviar código” al final, dentro del contenedor negro
                       Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.only(top: 5.0, left: 24.0,right: 24.0),
+                        //padding: const EdgeInsets.all(24.0),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -364,23 +363,62 @@ return Scaffold(
                             // El botón siempre tiene onPressed,
                             // pero si no están los campos llenos => SnackBar
                             onPressed: () async {
-                              final sendResetCodeResponse = await 
-                                                SendResetPassword.send_reset_code(
-                                                  email
-                                                );
-                                  if (sendResetCodeResponse != null) {    
-                                    user_code = sendResetCodeResponse.userCode;
+                                  final sendResetCodeResponse = await sendResetCode(widget.email);
+                                  if (sendResetCodeResponse != null) {
+                                        // Mostrar SnackBar de éxito
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Row(
+                                              children: const [
+                                                Icon(Icons.check_circle, color: Colors.green),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    'Código de verificación enviado.',
+                                                    style: TextStyle(color: Colors.white),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                            behavior: SnackBarBehavior.floating, 
+                                                margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                                ),// Flotante como en la imagen
+                                          ),
+                                        );
+                                    // Asignar el nuevo valor de userCode y reconstruir el widget
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SetCodeVerificationScreen(
+                                          email: widget.email,
+                                          token: widget.token,
+                                          userCode: sendResetCodeResponse.userCode, // Pasar el nuevo valor de userCode
+                                        ),
+                                      ),
+                                    );
+                                    //print('LOG_D Codigo reenviado: ${sendResetCodeResponse.userCode}');
                                     resetTimer(); // Reiniciar el timer
                                   // Limpiar todos los campos de código
                                       for (var controller in _controllers) {
                                         controller.clear();
                                         }
                                         setState(() {
-                                          user_code_screen = '';
+                                          userCodeScreen = '';
+                                          userCodeScreenNoObfuscated = List.filled(6, '');
                                         });
                                       // Posicionar el cursor en el primer controlador
                                       FocusScope.of(context).requestFocus(_focusNodes[0]);
-                                    }              
+                                    }  else {
+    // Mostrar SnackBar si ocurre un error
+                                       ScaffoldMessenger.of(context).showSnackBar(
+                                         const SnackBar(
+                                           content: Text('Error al reenviar el código. Inténtalo de nuevo.'),
+                                         ),
+                                       );
+                    }              
                                   },
 //--------------------------------------------------------------------------       
                             child: Text(
@@ -408,3 +446,5 @@ return Scaffold(
 
   
 }
+
+

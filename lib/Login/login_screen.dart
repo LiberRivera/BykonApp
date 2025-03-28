@@ -3,10 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../ResetPassword/send_reset_code_screen.dart';
 import '../main.dart'; // Ajusta la ruta a donde tengas tu HomeScreen
 import 'login_auth_service.dart';
-//import '../changepassword.dart';
-
-
-
+import '../Common/commonFunctions.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env"); // Cargar variables de entorno
@@ -27,6 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _passwordVisible = false;
   bool _rememberMe = true;
+  bool _showErrorMessage = false;
+  bool _hasInteractedWithEmail = false;
+
 
   @override
   void initState() {
@@ -35,21 +35,30 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.addListener(_onFieldChange);
     _passwordController.addListener(_onFieldChange);
 
-    _emailController.text = "libertad.rivera@bykon.com.mx"; //"bertin.salas@bykon.com.mx";
-    _passwordController.text = "%h4rRyP0tt3r%"; //"%h4rRyP0tt3r%23";
+   //_emailController.text="";// = "libertad.rivera@bykon.com.mx"; //"bertin.salas@bykon.com.mx";
+   // _passwordController.text="";// = "%h4rRyP0tt3r%"; 
+    
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+
     super.dispose();
   }
 
   void _onFieldChange() {
+
     // Cada vez que cambian los campos, se reconstruye la UI
-    setState(() {});
+    setState(() {
+      _showErrorMessage = false;
+      _hasInteractedWithEmail = true; });
   }
+
+    // Verifica si el correo es una formula-bien-formada
+     bool get _isMailWellDone =>
+     _emailController.text.isNotEmpty && CommonFunctions.isValidEmail(_emailController.text); 
 
   // Verifica si ambos campos están llenos
   bool get _allFieldsFilled =>
@@ -94,9 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // Determinar si están ambos campos llenos
     final bool allFieldsFilled = _allFieldsFilled;
 
+   final bool emailFieldWellDoneFilled = _isMailWellDone;
+
     // Definir los colores actuales del botón según estado
-    final Color currentButtonColor = allFieldsFilled ? buttonActiveColor : buttonInactiveColor;
-    final Color currentButtonTextColor = allFieldsFilled ? buttonActiveTextColor : buttonInactiveTextColor;
+    final Color currentButtonColor = allFieldsFilled && emailFieldWellDoneFilled ? buttonActiveColor : buttonInactiveColor;
+    final Color currentButtonTextColor = allFieldsFilled && emailFieldWellDoneFilled? buttonActiveTextColor : buttonInactiveTextColor;
 
     return Scaffold(
       // El fondo degradado ocupa toda la pantalla
@@ -166,9 +177,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Campo: Correo
                               Container(
                                 height: 90.0,
-                                margin: const EdgeInsets.only(bottom: 32.0),
+                                margin: const EdgeInsets.only(bottom: 20.0),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 16),
+                                    horizontal: 16, vertical: 10),
                                 decoration: BoxDecoration(
                                   color: cardColor,
                                   borderRadius: BorderRadius.circular(8.0),
@@ -183,9 +194,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                     hintText: 'ejemplo@bykon.com.mx',
                                     hintStyle: TextStyle(color: Colors.white70, fontSize: 18),
                                   ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _hasInteractedWithEmail = true;
+                                      });
+                                    },
                                 ),
                               ),
-
+                              //Control de correo mal escrito
+//____________________________________________________________________________________                              
+                              if (_hasInteractedWithEmail && _emailController.text.length>5 && !emailFieldWellDoneFilled)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 5.0, left: 20.0),
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.warning, color: Colors.red, size: 16),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Correo inválido.',
+                                            style: TextStyle(color: Color(0xFFFFCCD4), fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                               // Campo: Contraseña
                               Container(
                                 height: 90.0,
@@ -228,7 +261,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ],
                                 ),
                               ),
-
+                    // Cuadro de texto para el mensaje de error de contraseña inc
+                                if (_showErrorMessage)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0, left: 10.0),
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.warning, color: Colors.red, size: 16),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Verifica que tu contraseña sea correcta e inténtalo de nuevo.',
+                                            style: TextStyle(color: Color(0xFFFFCCD4), fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                               // Row: “Recuérdame” + “Olvidé mi contraseña”
                               Row(
                                 mainAxisAlignment:
@@ -263,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         context,
                                         MaterialPageRoute(
                                           //builder: (context) => ChangePasswordScreen(),
-                                         builder: (context) => ResetPasswordScreen(),
+                                         builder: (context) => ResetCodeScreen(),
                                         ),
                                       );
                                     },
@@ -304,13 +353,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SnackBar(
                                     content: Row(
                                       children: const [
-                                        Icon(Icons.warning, color: Color.fromARGB(255, 255, 219, 166)),
+                                        Icon(Icons.warning, color: Colors.red, size: 16),
                                         SizedBox(width: 8),
                                         Expanded(
                                           child: Text('Por favor, llena correo y contraseña'),
                                         ),
                                       ],
                                     ),
+                                    backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                    behavior: SnackBarBehavior.floating, 
+                                        margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                        ),// Flotante como en la imagen
                                   ),
                                 );
                               } else {
@@ -320,7 +375,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   _emailController.text,
                                                   _passwordController.text
                                                 );
-                                      if (loginResponse != null) {                                         
+                                      if (loginResponse != null) {        
+                                          setState(() {
+                                              _showErrorMessage = false;
+                                            });                                 
                                 // Están completos => navegamos a Home
                                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                                     Navigator.pushReplacement(
@@ -333,7 +391,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     );
                                                 }
                                                );
-                                              } 
+                                              } else{
+                                                  setState(() {
+                                                      _showErrorMessage = true;
+                                                    });
+                                              }
                                             }
                                           },
 //--------------------------------------------------------------------------       

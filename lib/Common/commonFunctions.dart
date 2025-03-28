@@ -15,7 +15,7 @@ class CommonFunctions {
 
     return '$baseUrl/$endpoint'; // Concatenar la URL base con el endpoint
   }
-
+//_isMailWellDone
     static bool isValidEmail(String email) {
     // Expresión regular para validar un correo electrónico
     final RegExp emailRegex = RegExp(
@@ -66,7 +66,7 @@ static String obfuscateEmail(String email) {
 static bool isValidPassword(String password) {
     // Expresión regular para validar la contraseña
     final RegExp passwordRegExp = RegExp(
-      r'^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[a-zA-Z]).{8,}$',
+      r'^(?=.*[A-Z])(?=.*[!@#$&*%])(?=.*[a-zA-Z]).{8,}$',
     );
     return passwordRegExp.hasMatch(password);
   }

@@ -1,38 +1,45 @@
-// ignore_for_file: no_logic_in_create_state
-
 import 'package:flutter/material.dart';
-import 'package:mi_app/ChangeCreateNewPassword/change_password_service.dart';
+import 'package:mi_app/Login/login_screen.dart';
 import '../Common/commonFunctions.dart';
+import 'create_new_password_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../main.dart'; 
 
-
-class CreateNewPasswordScreen extends StatefulWidget {
-  final String token;
-  final String user_code;
-  
-  const CreateNewPasswordScreen({super.key, required this.token,required this.user_code});
+Future<void> main() async {
+  await dotenv.load(fileName: ".env"); // Cargar variables de entorno
+  runApp(MyApp());
+}
+class ChangePasswordScreen extends StatefulWidget {
+    final String token;
+  final String userCode;
+  const ChangePasswordScreen({super.key, required this.token,required this.userCode});
 
   @override
-  State<CreateNewPasswordScreen> createState() => _CreateNewPasswordScreenState( token:token, user_code: user_code );
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
 }
 
-class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
-  final String token;                            
-  String user_code;
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+String token = '';
+String userCode = '';
 
-  _CreateNewPasswordScreenState({required this.token, required this.user_code});
+   final TextEditingController _newPasswordController = TextEditingController();
+   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  final TextEditingController _newPasswordController =  TextEditingController();
-  final TextEditingController _confirmPasswordController =  TextEditingController();
+  bool _newPasswordVisible = false;
+  bool _confirmPasswordVisible = false;
+  bool _hasInteractedWithNewPassword = false;
 
- bool _newPasswordVisible = true;
- bool _confirmPasswordVisible = true;
+//_ChangePasswordScreenState();
+
   @override
   void initState() {
     super.initState();
     // Escuchamos cambios en ambos campos para refrescar el botón
     _newPasswordController.addListener(_onFieldChange);
     _confirmPasswordController.addListener(_onFieldChange);
-    
+
+    //_newPasswordController.text;// = "%h4rRyP0tt3r%"; 
+    //_confirmPasswordController.text;// = "%h4rRyP0tt3r%"; 
   }
   @override
   void dispose() {
@@ -43,14 +50,19 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
 
   void _onFieldChange() {
     // Cada vez que cambian los campos, se reconstruye la UI
-    setState(() {});
+    setState(() {
+      _hasInteractedWithNewPassword = true; 
+    });
   }
-  
+    
     // Verifica si el password es una formula-bien-formada
-   bool get _isPasswordWellDone =>
+   bool get _allFieldsFilled =>
      _newPasswordController.text.isNotEmpty && CommonFunctions.isValidPassword(_newPasswordController.text); 
-
- Map<String, dynamic>? resetPasswordResponse;
+  // Verifica si ambos passwords coinciden
+  bool get arePasswordsEqual =>
+    _newPasswordController.text == _confirmPasswordController.text;
+ 
+  Map<String, dynamic>? resetPasswordResponse;
   bool isLoading = false;
 
 
@@ -81,14 +93,12 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
     final Color buttonInactiveColor = Colors.grey.shade600;
     final Color buttonInactiveTextColor = Colors.grey.shade300;
 
-    // Determinar si el confirmPassword no es vacio y está bien formado
-    final bool newPasswordFieldWellDoneFilled = _isPasswordWellDone;
+    // Determinar si el password no es vacio y está bien formado
+    final bool allFieldsFilled = _allFieldsFilled;
 
-
- 
     // Definir los colores actuales del botón según estado
-    final Color currentButtonColor = newPasswordFieldWellDoneFilled ? buttonActiveColor : buttonInactiveColor;
-    final Color currentButtonTextColor = newPasswordFieldWellDoneFilled ? buttonActiveTextColor : buttonInactiveTextColor;
+    final Color currentButtonColor = allFieldsFilled && arePasswordsEqual? buttonActiveColor : buttonInactiveColor;
+    final Color currentButtonTextColor = allFieldsFilled && arePasswordsEqual? buttonActiveTextColor : buttonInactiveTextColor;
 return Scaffold(
       // El fondo degradado ocupa toda la pantalla
       body: Container(
@@ -105,7 +115,7 @@ return Scaffold(
               // -----------------------------------------------------------------
               // PARTE SUPERIOR: Logo grande con espacio
               // -----------------------------------------------------------------
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               Image.asset(
                 'assets/ByKon Logo.png',
                 width: 280, // Logo grande
@@ -141,7 +151,7 @@ return Scaffold(
                               // Texto: "Crea una nueva contraseña"
                               const Center(
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 36.0),
+                                  padding: EdgeInsets.only(bottom: 24.0),
                                   child: Text(
                                     'Crea una nueva contraseña',
                                     textAlign: TextAlign.center,
@@ -154,7 +164,7 @@ return Scaffold(
                                 ),
                               ),
 
-                              // Campo: Nueva contraseña
+                              // Campo: nueva contraseña
                               Container(
                                 height: 90.0,
                                 margin: const EdgeInsets.only(bottom: 8.0),
@@ -175,9 +185,14 @@ return Scaffold(
                                           border: InputBorder.none,
                                           labelText: 'Nueva contraseña',
                                           labelStyle: TextStyle(color: Colors.grey, fontSize: 24),
-                                          hintText: 'Labj162@',
+                                          hintText: 'abj162@',
                                           hintStyle: TextStyle(color: Colors.white70, fontSize: 18),
                                         ),
+                                                                            onChanged: (value) {
+                                      setState(() {
+                                        _hasInteractedWithNewPassword = true;
+                                      });
+                                    },
                                       ),
                                     ),
                                     IconButton(
@@ -196,7 +211,39 @@ return Scaffold(
                                   ],
                                 ),
                               ),
-
+                              if (_hasInteractedWithNewPassword && _newPasswordController.text.length>5 && !_allFieldsFilled)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.info_outline, color: Colors.white70, size: 16),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Debe tener una mayúscula, 8 caracteres mínimo y un carácter especial (“@#%)',
+                                              style: TextStyle(color:  Color(0xFFFFE5EA), fontSize: 14),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                             /*   if (_allFieldsFilled)    
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.check_circle, color: Color(0xFF36B274), size: 16),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Debe tener una mayúscula, 8 caracteres mínimo y un carácter especial (“@#%)',
+                                              style: TextStyle(color: Color(0xFFD9FFEC), fontSize: 14),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                         */
                               // Campo: Confirmar contraseña
                               Container(
                                 height: 90.0,
@@ -239,14 +286,32 @@ return Scaffold(
                                   ],
                                 ),
                               ),
+ 
                             ],
                           ),
                         ),
                       ),
-
-                      // 2) Botón “Guardar nueva contraseña” al final, dentro del contenedor negro                                          
+                      // Mostrar cuadro de texto si las contraseñas no coinciden
+                        if (_hasInteractedWithNewPassword && _confirmPasswordController.text.length>5 && !arePasswordsEqual)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0, left: 32.0),
+                            child: Row(
+                              children: const [
+                                Icon(Icons.warning, color: Colors.red, size: 16),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'La contraseña no coincide.',
+                                    style: TextStyle(color: Color(0xFFFFE5EA), fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      // 2) Botón “Guardar nueva contraseña” al final, dentro del contenedor negro
                       Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.only(left: 24.0,right: 24.0, bottom: 10.0),
+                        //padding: const EdgeInsets.all(24.0),//padding: EdgeInsets.only(bottom: 24.0),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -259,19 +324,9 @@ return Scaffold(
                             ),
                             // El botón siempre tiene onPressed,
                             // pero si no están los campos llenos => SnackBar
-//----------------Click en boton continuar----------------                            
-                            onPressed: () async { //newPasswordFieldWellDoneFilled
-                            if (CommonFunctions.arePasswordsEqual(
-                                  _newPasswordController.text,
-                                  _confirmPasswordController.text)){
-                                          final changePasswordResponse = await 
-                                                SendChangePassword.changePassword(
-                                                 token,
-                                                  user_code,
-                                                  _newPasswordController.text
-                                                );
-                                  }else {
-                                // Mostrar SnackBar: las contraseñas no coinciden
+                            onPressed: () async {
+                              if (!allFieldsFilled) {
+                                // Mostrar SnackBar: faltan datos
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Row(
@@ -279,14 +334,57 @@ return Scaffold(
                                         Icon(Icons.warning, color: Color.fromARGB(255, 255, 219, 166)),
                                         SizedBox(width: 8),
                                         Expanded(
-                                          child: Text('Las contraseñas no coinciden'),
+                                          child: Text('Por favor, llena correo'),
                                         ),
                                       ],
                                     ),
                                   ),
                                 );
-                              }
-                            },
+                              } else {
+//--------------------------------------------------------------------------
+                      if(arePasswordsEqual){
+                              final sendChangePassword = await 
+                                                SendChangePassword.changePassword(
+                                                  widget.token,widget.userCode, _newPasswordController.text
+                                                );
+                                      if (sendChangePassword != null) {                                 
+                                // Están completos => navegamos a Home
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Row(
+                                              children: [
+                                                const Icon(Icons.check_circle, color: Colors.green),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                   sendChangePassword.message,// 'Código de verificación enviado.',
+                                                    style: const TextStyle(color: Colors.white),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                            behavior: SnackBarBehavior.floating, 
+                                                margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                                ),// Flotante como en la imagen
+                                          ),
+                                        );
+                                //print('LOG_D message: ${sendChangePassword.message}');                            
+                                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                    Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => LoginScreen(),
+                                                      ),
+                                                    );
+                                                }
+                                               );
+                                              } 
+                                         } 
+                                            }
+                                          },
 //--------------------------------------------------------------------------       
                             child: Text(
                               'Guardar nueva contraseña',
@@ -299,9 +397,10 @@ return Scaffold(
                           ),
                         ),
                       ),
-                      // 3) Botón “Cancelar” al final, dentro del contenedor negro
+                  // 3) Botón “Cancelar” al final, dentro del contenedor negro
                       Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.only(left: 24.0,right: 24.0),
+                        //padding: const EdgeInsets.all(24.0),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -317,8 +416,32 @@ return Scaffold(
                             // El botón siempre tiene onPressed,
                             // pero si no están los campos llenos => SnackBar
                             onPressed: () async {
-
-              
+                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Row(
+                                              children: [
+                                                Icon(Icons.warning, color: Color.fromARGB(255, 255, 219, 166)),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    'Cambio de password cancelado.',
+                                                    style: const TextStyle(color: Colors.white),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                            behavior: SnackBarBehavior.floating, 
+                                                margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                                ),// Flotante como en la imagen
+                                          ),
+                                        );
+                                  Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                                      );
                                   },
 //--------------------------------------------------------------------------       
                             child: Text(
@@ -331,8 +454,7 @@ return Scaffold(
                             ),
                           ),
                         ),
-                      ),
-
+                      ),                    
                     ],
                   ),
                 ),
@@ -345,7 +467,7 @@ return Scaffold(
   }
 
 
-
   
 }
+
 

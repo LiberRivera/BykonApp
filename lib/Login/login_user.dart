@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class User {
   final String admissionDate;
@@ -69,11 +67,12 @@ class LoginResponse {
       user: User.fromJson(json['user']),
     );
   }
+}  
 
 
 
 // Función para realizar el login
-Future<LoginResponse> login(String email, String password) async {
+/*Future<LoginResponse> login(String email, String password) async {
   final url = Uri.parse('https://dev-bykonapp.bertinsalas.com/api/auth/v1/login');
   final body = jsonEncode({
     'email': email,
@@ -94,5 +93,4 @@ Future<LoginResponse> login(String email, String password) async {
     // Si hay un error, lanzamos una excepción
     throw Exception('Error al realizar el login: ${response.statusCode}');
   }
-}
-}
+}*/

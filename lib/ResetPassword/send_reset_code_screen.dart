@@ -1,44 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:mi_app/ResetPassword/send_reset_code_service.dart';
 import 'package:mi_app/VerificationCode/verification_code_screen.dart';
-import '../Token/token_storage.dart';
 import '../Common/commonFunctions.dart';
 
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+
+class ResetCodeScreen extends StatefulWidget {
+  const ResetCodeScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ResetCodeScreen> createState() => _ResetCodeScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetCodeScreenState extends State<ResetCodeScreen> {
 
-   final TextEditingController _emailController = TextEditingController();
-
-
+final TextEditingController _emailController = TextEditingController();
+///Users/vn55iez/BykonApp/mi_app/lib/VerificationCode/verification_code_screen.dart
+  bool _showErrorMessage = false;
+  bool _hasInteractedWithEmail = false;
 
   @override
   void initState() {
     super.initState();
     // Escuchamos cambios en ambos campos para refrescar el botón
     _emailController.addListener(_onFieldChange);
-
-    _emailController.text = 'libertad.rivera@bykon.com.mx'; //"libertad.rivera@bykon.com.mx"; //"bertin.salas@bykon.com.mx";
   }
   @override
   void dispose() {
-    _emailController.dispose();
+  _emailController.dispose();
     super.dispose();
   }
 
   void _onFieldChange() {
     // Cada vez que cambian los campos, se reconstruye la UI
-    setState(() {});
+    setState(() {_showErrorMessage = false;_hasInteractedWithEmail = true; });
   }
     
     // Verifica si el correo es una formula-bien-formada
-   bool get _isMailWellDone =>
+     bool get _isMailWellDone =>
      _emailController.text.isNotEmpty && CommonFunctions.isValidEmail(_emailController.text); 
 
  Map<String, dynamic>? resetPasswordResponse;
@@ -72,7 +71,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final Color buttonInactiveColor = Colors.grey.shade600;
     final Color buttonInactiveTextColor = Colors.grey.shade300;
 
-    // Determinar si el email no es vacio y está bien formado
     final bool emailFieldWellDoneFilled = _isMailWellDone;
 
     // Definir los colores actuales del botón según estado
@@ -160,7 +158,7 @@ return Scaffold(
                               // Campo: Correo
                               Container(
                                 height: 90.0,
-                                margin: const EdgeInsets.only(bottom: 24.0),
+                                margin: const EdgeInsets.only(bottom: 5.0),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 16),
                                 decoration: BoxDecoration(
@@ -174,16 +172,37 @@ return Scaffold(
                                     border: InputBorder.none,
                                     labelText: 'Correo',
                                     labelStyle: TextStyle(color: Colors.grey, fontSize: 24),
-                                    hintText: 'libertad.rivera@bykon.com.mx',
+                                    hintText: 'ejemplo@bykon.com.mx',
                                     hintStyle: TextStyle(color: Colors.white70, fontSize: 18),
                                   ),
+                                  onChanged: (value) {
+                                      setState(() {
+                                        _hasInteractedWithEmail = true;
+                                      });
+                                    },
                                 ),
                               ),
+                              ///Validación de correo bien formado
+                              if (_hasInteractedWithEmail && _emailController.text.length>5 && !_isMailWellDone)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0, left: 20.0),
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.warning, color: Colors.red, size: 16),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            'Correo inválido.',
+                                            style: TextStyle(color: Color(0xFFFFCCD4), fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                             ],
                           ),
                         ),
-                      ),
-
+                      ),                      
                       // 2) Botón “Enviar código” al final, dentro del contenedor negro
                       Padding(
                         padding: const EdgeInsets.all(24.0),//padding: EdgeInsets.only(bottom: 24.0),
@@ -200,7 +219,7 @@ return Scaffold(
                             // El botón siempre tiene onPressed,
                             // pero si no están los campos llenos => SnackBar
                             onPressed: () async {
-                              if (!emailFieldWellDoneFilled) {
+                              if ( !emailFieldWellDoneFilled) {
                                 // Mostrar SnackBar: faltan datos
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -217,28 +236,56 @@ return Scaffold(
                                 );
                               } else {
 //--------------------------------------------------------------------------
-                              final sendResetCodeResponse = await 
-                                                SendResetPassword.send_reset_code(
-                                                  "libertad.rivera@bykon.com.mx"//_emailController.text
+                             final sendResetCodeResponse = await 
+                                                sendResetCode(
+                                                  _emailController.text
                                                 );
-                                      if (sendResetCodeResponse != null) {     
-                                        //  await TokenStorage.saveToken("token_reset_password", sendResetCodeResponse.token);
-                                        //  final token = await TokenStorage.getToken("token_reset_password");                              
-                                // Están completos => navegamos a Home
+                                    if (sendResetCodeResponse != null) {     
+                                         setState(() {
+                                               _showErrorMessage = false;
+                                            });    
+                                // Están completos => navegamos a SetCodeVerificationScreen
+                                //print('Token: ${sendResetCodeResponse.token}');
+                                //print('User Code: ${sendResetCodeResponse.userCode}');
+
                                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                                     Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
-                                                        builder: (context) => SetCodeVerificationScreen(   
-                                                            email: "libertad.rivera@bykon.com.mx",//email: _emailController.text,   
-                                                            token: sendResetCodeResponse.token, 
-                                                            user_code: sendResetCodeResponse.userCode
-                                                        ),
+                                                        builder: (context) => SetCodeVerificationScreen(
+                                                          email: _emailController.text,//"libertad.rivera@bykon.com.mx",
+                                                          token: sendResetCodeResponse.token ,//"token",
+                                                          userCode: sendResetCodeResponse.userCode,//"userCode",
+                                                        ),   
                                                       ),
                                                     );
                                                 }
                                                );
-                                              } 
+                                              } else {
+                                                //no se pudo enviar el codigo
+                                                setState(() {
+                                                  _showErrorMessage = true;
+                                                });
+                                                 ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Row(
+                                                        children: const [
+                                                          Icon(Icons.warning, color: Colors.red, size: 16),
+                                                          SizedBox(width: 8),
+                                                          Expanded(
+                                                            child: Text('No se pudo enviar el código. Inténtalo más tarde'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                                      behavior: SnackBarBehavior.floating, 
+                                                          margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                                          ),// Flotante como en la imagen
+                                                    ),
+                                                  );
+                                              }
                                             }
                                           },
 //--------------------------------------------------------------------------       
@@ -267,4 +314,5 @@ return Scaffold(
 
   
 }
+
 

@@ -41,7 +41,7 @@ class ChangePasswordResponse {
 class SendChangePassword{
 // valida que la URL del servicio de SendChangePassword sea valida
     static String get sendChangePasswordUrl {
-      return CommonFunctions.validateUrl('/api/reset-password/v1/validate-change');
+      return CommonFunctions.validateUrl('api/reset-password/v1/validate-change');
     }
     /*
       String token, String userCode, String newPassword,
@@ -64,12 +64,16 @@ try{
   );
 
   if (response.statusCode == 200) {
+    print('LOG_D response 200: ${response.body}');
     return ChangePasswordResponse.fromJson(jsonDecode(response.body));
   } else {
+    print('LOG_D response : Failed to reset password');
     throw Exception('Failed to reset password');
   }
   }catch (e) {
-      // Manejar errores de conexión o excepciones
+      // Manejar errores de conexió
+      //n o excepciones
+      print('LOG_D response : Failed to reset password $e');
          return null;
 }
 }
