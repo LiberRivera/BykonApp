@@ -128,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                         radius: 30,
                         child: const Icon(Icons.person, color: Colors.white),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:  [
@@ -136,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                              '¡Hola $name!', 
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 24,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

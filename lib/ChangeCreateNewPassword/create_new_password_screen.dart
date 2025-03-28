@@ -115,12 +115,12 @@ return Scaffold(
               // -----------------------------------------------------------------
               // PARTE SUPERIOR: Logo grande con espacio
               // -----------------------------------------------------------------
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
               Image.asset(
                 'assets/ByKon Logo.png',
-                width: 280, // Logo grande
+                width: 240, // Logo grande
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // -----------------------------------------------------------------
               // PARTE INFERIOR: Contenedor negro con formulario + botón
@@ -227,23 +227,6 @@ return Scaffold(
                                         ],
                                       ),
                                     ),
-                             /*   if (_allFieldsFilled)    
-                                  Padding(
-                                      padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.check_circle, color: Color(0xFF36B274), size: 16),
-                                          SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              'Debe tener una mayúscula, 8 caracteres mínimo y un carácter especial (“@#%)',
-                                              style: TextStyle(color: Color(0xFFD9FFEC), fontSize: 14),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                         */
                               // Campo: Confirmar contraseña
                               Container(
                                 height: 90.0,

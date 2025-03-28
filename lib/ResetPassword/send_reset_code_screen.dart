@@ -92,12 +92,12 @@ return Scaffold(
               // -----------------------------------------------------------------
               // PARTE SUPERIOR: Logo grande con espacio
               // -----------------------------------------------------------------
-              const SizedBox(height: 40),
+              const SizedBox(height: 25),
               Image.asset(
                 'assets/ByKon Logo.png',
-                width: 280, // Logo grande
+                width: 240, // Logo grande
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // -----------------------------------------------------------------
               // PARTE INFERIOR: Contenedor negro con formulario + botón
