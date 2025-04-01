@@ -326,6 +326,12 @@ return Scaffold(
                             ),
                           ],
                         ),
+                        backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                        behavior: SnackBarBehavior.floating, 
+                            margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                            ),// Flotante como en la imagen
                       ),
                     );
                   }

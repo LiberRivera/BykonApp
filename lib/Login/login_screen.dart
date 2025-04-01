@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     super.dispose();
   }
-
+///Users/vn55iez/BykonApp/mi_app/lib/main.dart
   void _onFieldChange() {
 
     // Cada vez que cambian los campos, se reconstruye la UI
@@ -372,8 +372,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               } else {
                                 final apiService = ApiService();
 //--------------------------------------------------------------------------
-                                  //final loginResponse = await 
-                                                //LoginService.login(
                                       final loginResponse = await apiService.login(            
                                        _emailController.text,
                                        _passwordController.text

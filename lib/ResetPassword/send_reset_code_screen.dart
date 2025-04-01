@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_app/ResetPassword/send_reset_code_service.dart';
 import 'package:mi_app/VerificationCode/verification_code_screen.dart';
 import '../Common/commonFunctions.dart';
 import '../APIService/api_service.dart';
@@ -231,7 +230,8 @@ return Scaffold(
                                           child: Text('Por favor, llena correo'),
                                         ),
                                       ],
-                                    ),                                                                        backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                    ),  //Row  
+                                    backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen                                                                    backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
                                     behavior: SnackBarBehavior.floating, 
                                         margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
                                         shape: RoundedRectangleBorder(
@@ -259,7 +259,7 @@ return Scaffold(
                                                       MaterialPageRoute(
                                                         builder: (context) => SetCodeVerificationScreen(
                                                           email: _emailController.text,//"libertad.rivera@bykon.com.mx",
-                                                          token: sendResetCodeResponse['message'],//sendResetCodeResponse.token ,//"token",
+                                                          token: sendResetCodeResponse['token'],//sendResetCodeResponse.token ,//"token",
                                                           userCode: sendResetCodeResponse['user_code']//sendResetCodeResponse.userCode,//"userCode",
                                                         ),   
                                                       ),

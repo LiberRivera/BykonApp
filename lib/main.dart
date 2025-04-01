@@ -136,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                              '¡Hola ${CommonFunctions.truncateToTwoTokens(name)}!', 
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

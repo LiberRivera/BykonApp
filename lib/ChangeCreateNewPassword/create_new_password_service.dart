@@ -41,7 +41,7 @@ class ChangePasswordResponse {
 class SendChangePassword{
 // valida que la URL del servicio de SendChangePassword sea valida
     static String get sendChangePasswordUrl {
-      return CommonFunctions.validateUrl('api/reset-password/v1/validate-change');
+      return CommonFunctions.validateUrl('/api/reset-password/v1/validate-change');
     }
     /*
       String token, String userCode, String newPassword,

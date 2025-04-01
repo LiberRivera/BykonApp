@@ -321,6 +321,12 @@ return Scaffold(
                                         ),
                                       ],
                                     ),
+                                    backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                    behavior: SnackBarBehavior.floating, 
+                                        margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                        ),// Flotante como en la imagen
                                   ),
                                 );
                               } else {
@@ -330,18 +336,18 @@ return Scaffold(
                                                 SendChangePassword.changePassword(
                                                   widget.token,widget.userCode, _newPasswordController.text
                                                 );
-                                      if (sendChangePassword != null) {                                 
-                                // Están completos => navegamos a Home
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      if (sendChangePassword != null) {     
+                                                                                // Mostrar SnackBar de éxito
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Row(
-                                              children: [
-                                                const Icon(Icons.check_circle, color: Colors.green),
-                                                const SizedBox(width: 8),
+                                              children: const [
+                                                Icon(Icons.check_circle, color: Colors.green),
+                                                SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                   sendChangePassword.message,// 'Código de verificación enviado.',
-                                                    style: const TextStyle(color: Colors.white),
+                                                    'Contraseña guardada con éxito.',
+                                                    style: TextStyle(color: Colors.white),
                                                   ),
                                                 ),
                                               ],
@@ -353,8 +359,8 @@ return Scaffold(
                                                   borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
                                                 ),// Flotante como en la imagen
                                           ),
-                                        );
-                                //print('LOG_D message: ${sendChangePassword.message}');                            
+                                        );                            
+                                // Están completos => navegamos a Home                          
                                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                                     Navigator.pushReplacement(
                                                       context,
@@ -364,7 +370,28 @@ return Scaffold(
                                                     );
                                                 }
                                                );
-                                              } 
+                                              } else {
+                                                //no se pudo cambiar la contraseña
+                                                 ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Row(
+                                                        children: const [
+                                                          Icon(Icons.warning, color: Colors.red, size: 16),
+                                                          SizedBox(width: 8),
+                                                          Expanded(
+                                                            child: Text('No se pudo enviar el código. Inténtalo más tarde'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                                      behavior: SnackBarBehavior.floating, 
+                                                          margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                                          ),// Flotante como en la imagen
+                                                    ),
+                                                  );
+                                              }
                                          } 
                                             }
                                           },
@@ -399,7 +426,7 @@ return Scaffold(
                             // El botón siempre tiene onPressed,
                             // pero si no están los campos llenos => SnackBar
                             onPressed: () async {
-                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Row(
                                               children: [
@@ -407,7 +434,7 @@ return Scaffold(
                                                 const SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                    'Cambio de password cancelado.',
+                                                    'Cambio de contraseña cancelada.',
                                                     style: const TextStyle(color: Colors.white),
                                                   ),
                                                 ),
