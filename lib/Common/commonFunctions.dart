@@ -2,6 +2,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CommonFunctions {
 
+  static String truncateToTwoTokens(String input) {
+  // Dividir la cadena en tokens (palabras) usando el espacio como separador
+  List<String> tokens = input.split(' ');
+
+  // Si hay más de dos tokens, truncar a los dos primeros
+  if (tokens.length > 2) {
+    return '${tokens[0]} ${tokens[1]}';
+  }
+
+  // Si tiene dos o menos tokens, devolver la cadena original
+  return input;
+}
+  //funcion para reemplazar espacios por saltos de linea
+  static  String replaceSpacesWithNewline(String input) {
+      return input.replaceAll(' ', '\n');
+  }
+
   static String validateUrl(String endpoint) {
     // Verificar si las variables de entorno se han cargado
     if (dotenv.env.isEmpty) {
@@ -13,7 +30,7 @@ class CommonFunctions {
       throw Exception('BASE_URL no está definido en el archivo .env');
     }
 
-    return '$baseUrl/$endpoint'; // Concatenar la URL base con el endpoint
+    return '$baseUrl$endpoint'; // Concatenar la URL base con el endpoint
   }
 //_isMailWellDone
     static bool isValidEmail(String email) {
@@ -75,5 +92,6 @@ static bool isValidPassword(String password) {
 static bool arePasswordsEqual(String password1, String password2) {
   return password1 == password2;
 }
+
 
 }

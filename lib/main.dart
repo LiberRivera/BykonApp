@@ -4,7 +4,7 @@ import 'profile.dart';
 import 'splash.dart';
 import 'vacaciones.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import '../Common/commonFunctions.dart';
 
 /// Conviertes el main en async
 /*void*/Future<void>  main() async {
@@ -133,7 +133,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:  [
                           Text(
-                             '¡Hola $name!', 
+                             '¡Hola ${CommonFunctions.truncateToTwoTokens(name)}!', 
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -190,28 +190,28 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                // Fila de íconos
-Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      _buildActionIcon(Icons.receipt_long, 'Recibos\nde nómina'),
-      _buildActionIcon(Icons.volunteer_activism, 'Prestaciones\n y beneficios'),
-      _buildActionIcon(Icons.school, 'Mis\n cursos'),
-      GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const IncidenciasVacacionesScreen(),
-            ),
-          );
-        },
-        child: _buildActionIcon(Icons.calendar_today, 'Agendar\n vacaciones'),
-      ),
-    ],
-  ),
-),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildActionIcon(Icons.receipt_long, 'Recibos\nde nómina'),
+                            _buildActionIcon(Icons.volunteer_activism, 'Prestaciones\n y beneficios'),
+                            _buildActionIcon(Icons.school, 'Mis\n cursos'),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const IncidenciasVacacionesScreen(),
+                                  ),
+                                );
+                              },
+                              child: _buildActionIcon(Icons.calendar_today, 'Agendar\n vacaciones'),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 32),
 
                       // Título: Próximos eventos

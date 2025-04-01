@@ -4,6 +4,7 @@ import '../ResetPassword/send_reset_code_screen.dart';
 import '../main.dart'; // Ajusta la ruta a donde tengas tu HomeScreen
 import 'login_auth_service.dart';
 import '../Common/commonFunctions.dart';
+import '../APIService/api_service.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env"); // Cargar variables de entorno
@@ -369,11 +370,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 );
                               } else {
+                                final apiService = ApiService();
 //--------------------------------------------------------------------------
-                                  final loginResponse = await 
-                                                LoginService.login(
-                                                  _emailController.text,
-                                                  _passwordController.text
+                                  //final loginResponse = await 
+                                                //LoginService.login(
+                                      final loginResponse = await apiService.login(            
+                                       _emailController.text,
+                                       _passwordController.text
                                                 );
                                       if (loginResponse != null) {        
                                           setState(() {
@@ -385,7 +388,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       context,
                                                       MaterialPageRoute(
                                                         builder: (context) => HomeScreen(
-                                                            name: loginResponse.user.fullName, jobPosition: loginResponse.user.jobPosition
+                                                            //name: loginResponse.user.fullName, jobPosition: loginResponse.user.jobPosition
+                                                        name: loginResponse['user']['full_name'], 
+                                                        jobPosition:loginResponse['user']['job_position']
                                                         ),
                                                       ),
                                                     );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mi_app/ResetPassword/send_reset_code_service.dart';
 import 'package:mi_app/VerificationCode/verification_code_screen.dart';
 import '../Common/commonFunctions.dart';
-
+import '../APIService/api_service.dart';
 
 
 class ResetCodeScreen extends StatefulWidget {
@@ -231,13 +231,18 @@ return Scaffold(
                                           child: Text('Por favor, llena correo'),
                                         ),
                                       ],
-                                    ),
+                                    ),                                                                        backgroundColor: const Color(0xFF4D4D4D), // Fondo negro como en la imagen
+                                    behavior: SnackBarBehavior.floating, 
+                                        margin: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0), // Centrar horizontalmente y ajustar verticalmente
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+                                        ),// Flotante como en la imagen
                                   ),
                                 );
                               } else {
 //--------------------------------------------------------------------------
-                             final sendResetCodeResponse = await 
-                                                sendResetCode(
+                              final apiService = ApiService();
+                             final sendResetCodeResponse = await apiService.resetPassword(
                                                   _emailController.text
                                                 );
                                     if (sendResetCodeResponse != null) {     
@@ -254,8 +259,8 @@ return Scaffold(
                                                       MaterialPageRoute(
                                                         builder: (context) => SetCodeVerificationScreen(
                                                           email: _emailController.text,//"libertad.rivera@bykon.com.mx",
-                                                          token: sendResetCodeResponse.token ,//"token",
-                                                          userCode: sendResetCodeResponse.userCode,//"userCode",
+                                                          token: sendResetCodeResponse['message'],//sendResetCodeResponse.token ,//"token",
+                                                          userCode: sendResetCodeResponse['user_code']//sendResetCodeResponse.userCode,//"userCode",
                                                         ),   
                                                       ),
                                                     );

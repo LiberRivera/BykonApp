@@ -27,7 +27,7 @@ Future<void> deleteToken(String key) async {
     return CommonFunctions.validateUrl('/api/auth/v1/login');
   }
 
-  // Método para realizar el login
+  // Método para realizar el login                        "%h4rRyP0tt3r%"
   static Future<LoginResponse?> login(String email, String password) async {
     final url = loginUrl;
     try {
