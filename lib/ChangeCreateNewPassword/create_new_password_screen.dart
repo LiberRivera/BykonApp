@@ -317,7 +317,7 @@ return Scaffold(
                                         Icon(Icons.warning, color: Color.fromARGB(255, 255, 219, 166)),
                                         SizedBox(width: 8),
                                         Expanded(
-                                          child: Text('Por favor, llena correo'),
+                                          child: Text('Por favor, llena la contraseña correctamente'),
                                         ),
                                       ],
                                     ),
