@@ -53,8 +53,7 @@ try{
   // Realiza la solicitud HTTP POST
     final request = 
          ChangePasswordRequest(token: token, userCode: userCode, newPassword: newPassword);
-
-  
+          print('LOG_D create_new_password_request: ${request.toJson()}');
   final response = await http.post(
     Uri.parse(url),
     headers: {
@@ -64,7 +63,8 @@ try{
   );
 
   if (response.statusCode == 200) {
-    print('LOG_D response 200: ${response.body}');
+    
+    print('LOG_D create_new_password_response 200: ${ChangePasswordResponse.fromJson(jsonDecode(response.body)).message}');
     return ChangePasswordResponse.fromJson(jsonDecode(response.body));
   } else {
     print('LOG_D response : Failed to reset password');

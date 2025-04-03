@@ -250,9 +250,6 @@ return Scaffold(
                                                _showErrorMessage = false;
                                             });    
                                 // Están completos => navegamos a SetCodeVerificationScreen
-                                //print('Token: ${sendResetCodeResponse.token}');
-                                //print('User Code: ${sendResetCodeResponse.userCode}');
-
                                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                                     Navigator.pushReplacement(
                                                       context,

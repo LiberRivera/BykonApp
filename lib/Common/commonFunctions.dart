@@ -83,7 +83,8 @@ static String obfuscateEmail(String email) {
 static bool isValidPassword(String password) {
     // Expresión regular para validar la contraseña
     final RegExp passwordRegExp = RegExp(
-      r'^(?=.*[A-Z])(?=.*[!@#$&*%])(?=.*[a-zA-Z]).{8,}$',
+      //r'^(?=.*[A-Z])(?=.*[!@#$&*%])(?=.*[a-zA-Z]).{8,}$',
+      r'^(?=.*[A-Z])(?=.*\d)(?=.*[!?¿¡"#$%&/()=])[A-Za-z\d!?¿¡"#$%&/()=]{8,}$',
     );
     return passwordRegExp.hasMatch(password);
   }

@@ -9,9 +9,10 @@ import 'package:mi_app/ResetPassword/send_reset_code_service.dart';
 
 class SetCodeVerificationScreen extends StatefulWidget {
   final String email;
-  final String token;
-  final String userCode;
-  const SetCodeVerificationScreen({super.key, required this.email, required this.token,required this.userCode});
+  String token;
+  String userCode;
+
+  SetCodeVerificationScreen({super.key, required this.email,required this.token, required this.userCode});
 
   @override
   // ignore: no_logic_in_create_state
@@ -19,7 +20,8 @@ class SetCodeVerificationScreen extends StatefulWidget {
 }
 
 class _SetCodeVerificationScreenState extends State<SetCodeVerificationScreen> {
-
+  late String token; 
+  late String userCode; 
   String obfuscatedEmail =''; // Inicializar con un valor por defecto
   String userCodeScreen = ''; // Variable para almacenar los seis valores ofuscados con puntos
   List<String> userCodeScreenNoObfuscated = List.filled(6, ''); // Lista para almacenar los seis valores no ofuscados
@@ -35,6 +37,8 @@ class _SetCodeVerificationScreenState extends State<SetCodeVerificationScreen> {
   @override
   void initState() {
     super.initState();
+    token = widget.token;
+    userCode = widget.userCode;
     obfuscatedEmail = CommonFunctions.obfuscateEmail(widget.email);
     startTimer();
   }
@@ -304,12 +308,10 @@ return Scaffold(
 //--------------k en boton continuar----------------                            
                 onPressed: () async {
                  String userCodeAsString = userCodeScreenNoObfuscated.join();
-                  //print(' LOG_D no_obfuscated User Code: $userCodeAsString  user_code: ${widget.userCode} ');
                       if (CommonFunctions.isValidUserCode(userCodeAsString) && userCodeAsString == widget.userCode && _remainingTime > 3){
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => 
-                           // CreateNewPasswordScreen(token: token, userCode: user_code)),
                            ChangePasswordScreen(token: widget.token,userCode: widget.userCode)),
                           );
                     } //else codigo incorrecto
@@ -348,9 +350,7 @@ return Scaffold(
               ),
             ),
           ),
-
-
-                  // 3) Botón “Reenviar código” al final, dentro del contenedor negro
+      // 3) Botón “Reenviar código” al final, dentro del contenedor negro
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0, left: 24.0,right: 24.0),
                         //padding: const EdgeInsets.all(24.0),
@@ -371,6 +371,8 @@ return Scaffold(
                             onPressed: () async {
                                   final sendResetCodeResponse = await sendResetCode(widget.email);
                                   if (sendResetCodeResponse != null) {
+                                    widget.token = sendResetCodeResponse.token;
+                                    widget.userCode = sendResetCodeResponse.userCode;
                                         // Mostrar SnackBar de éxito
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
@@ -394,7 +396,7 @@ return Scaffold(
                                                 ),// Flotante como en la imagen
                                           ),
                                         );
-                                    // Asignar el nuevo valor de userCode y reconstruir el widget
+                                    // 
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -405,7 +407,6 @@ return Scaffold(
                                         ),
                                       ),
                                     );
-                                    //print('LOG_D Codigo reenviado: ${sendResetCodeResponse.userCode}');
                                     resetTimer(); // Reiniciar el timer
                                   // Limpiar todos los campos de código
                                       for (var controller in _controllers) {

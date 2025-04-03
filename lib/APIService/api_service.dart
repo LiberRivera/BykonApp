@@ -19,7 +19,6 @@ class ApiService {
   // Servicio 1: Login
   Future<Map<String, dynamic>?> login(String email, String password) async {
     final url = CommonFunctions.validateUrl('/api/auth/v1/login');
-    //final url = Uri.parse('$_baseUrl/api/auth/v1/login');
     try {
       final response = await http.post(
         Uri.parse(url),//url as Uri,
@@ -31,16 +30,13 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        //final data = jsonDecode(response.body);print("Login exitoso: ${data['message']}");
-         final Map<String, dynamic> responseData = jsonDecode(response.body);
         
+         final Map<String, dynamic> responseData = jsonDecode(response.body);
         return responseData; //data;
       } else {
-        print("Error en el login: ${response.body}");
         return null;
       }
     } catch (e) {
-      print("Excepción en el login: $e");
       return null;
     }
   }
@@ -59,15 +55,13 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("Correo de recuperación enviado: ${data['message']}");
         return data;
       } else {
-        print("Error en el reset password: ${response.body}");
         return null;
       }
     } catch (e) {
-      print("Excepción en el reset password: $e");
       return null;
     }
   }
 }
+

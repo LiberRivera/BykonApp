@@ -220,7 +220,7 @@ return Scaffold(
                                           SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
-                                              'Debe tener una mayúscula, 8 caracteres mínimo y un carácter especial (“@#%)',
+                                              'Debe tener una mayúscula, al menos 8 caracteres, mínimo un número y un carácter especial (“@#%)',
                                               style: TextStyle(color:  Color(0xFFFFE5EA), fontSize: 14),
                                             ),
                                           ),
@@ -337,17 +337,17 @@ return Scaffold(
                                                   widget.token,widget.userCode, _newPasswordController.text
                                                 );
                                       if (sendChangePassword != null) {     
-                                                                                // Mostrar SnackBar de éxito
+                                            // Mostrar SnackBar de éxito
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Row(
-                                              children: const [
-                                                Icon(Icons.check_circle, color: Colors.green),
-                                                SizedBox(width: 8),
+                                              children: [
+                                                const Icon(Icons.check_circle, color: Colors.green),
+                                                const SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                    'Contraseña guardada con éxito.',
-                                                    style: TextStyle(color: Colors.white),
+                                                   sendChangePassword.message, //'Contraseña guardada con éxito.',
+                                                    style: const TextStyle(color: Colors.white),
                                                   ),
                                                 ),
                                               ],
@@ -379,7 +379,7 @@ return Scaffold(
                                                           Icon(Icons.warning, color: Colors.red, size: 16),
                                                           SizedBox(width: 8),
                                                           Expanded(
-                                                            child: Text('No se pudo enviar el código. Inténtalo más tarde'),
+                                                            child: Text('No se pudo guardar la contraseña. Inténtalo más tarde'),
                                                           ),
                                                         ],
                                                       ),
