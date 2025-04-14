@@ -111,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
                             '¡Hola ${CommonFunctions.truncateToTwoTokens(User.instancia?.fullName ?? 'Usuario')}!',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -119,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
                             User.instancia?.jobPosition ?? 'job',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
